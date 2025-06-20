@@ -4,5 +4,6 @@ plugins {
 
     id("org.jetbrains.kotlin.android") version "2.1.21" apply false
     id("com.chaquo.python") version "16.1.0" apply false
+    alias(libs.plugins.compose.compiler) apply false
 
 }

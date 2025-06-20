@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.hereliesaz.pwncatharsis"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "0.1"
@@ -24,13 +24,8 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
         }
-        signingConfig = signingConfigs.getByName("debug")
         multiDexEnabled = true
     }
-
-
-
-
 
     buildTypes {
         release {
@@ -52,39 +47,29 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    dependenciesInfo {
-        includeInApk = true
-        includeInBundle = true
-    }
-    buildToolsVersion = "35.0.0"
-    ndkVersion = "27.0.12077973"
-    flavorDimensions += "pyVersion"
-    productFlavors {
-        create("py313") { dimension = "pyVersion" }
-    }
 }
 
 // Chaquopy python configuration block
-
 chaquopy {
     defaultConfig {
+        // pwncat-cs requires an older Python version. 3.9 is compatible.
+        version = "3.9"
         pip {
             install("-r", "src/main/python/requirements.txt")
-
         }
         pyc {
             src = false
         }
     }
-
 }
+
 dependencies {
     // Core Android & Jetpack
     implementation(libs.androidx.core.ktx)
@@ -121,8 +106,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    implementation(libs.material)
-
-
 }
