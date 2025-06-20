@@ -62,7 +62,8 @@ chaquopy {
         // pwncat-cs requires an older Python version. 3.9 is compatible.
         version = "3.9"
         pip {
-            install("-r", "src/main/python/requirements.txt")
+            install("pwncat-cs")
+
         }
         pyc {
             src = false

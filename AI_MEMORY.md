@@ -68,3 +68,16 @@ REASONING: The user confirmed that the core vision of the app is a point-and-cli
 tool, not just a GUI for a terminal. This decision realigns the technical architecture with the
 foundational user experience goals.
 STATUS: ACTIVE
+
+ENTRY 8: NATIVE DEPENDENCY MANAGEMENT
+TIMESTAMP: 2025-06-20 23:58:20 UTC
+DECISION: The `pwncat-cs` dependency will be vendored directly into the project's source code
+instead
+of being installed from PyPI. The `python-rapidjson` dependency, which requires a C compiler, will
+be
+removed from `pwncat-cs`'s `pyproject.toml` to allow it to fall back to the standard `json` library.
+REASONING: The Chaquopy build environment cannot compile C extensions like `python-rapidjson` out of
+the box. All attempts to install `pwncat-cs` directly from `pip` failed due to this issue. Vendoring
+the dependency and modifying it to remove the C extension is the most robust solution to this
+problem, as it avoids the need for a complex cross-compilation toolchain.
+STATUS: ACTIVE
