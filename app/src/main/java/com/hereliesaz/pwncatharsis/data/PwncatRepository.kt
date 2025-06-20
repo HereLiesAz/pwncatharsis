@@ -1,8 +1,8 @@
-package com.hereliesaz.pwncartharsis.data
+package com.hereliesaz.pwncatharsis.data
 
-import com.hereliesaz.pwncartharsis.data.remote.ApiClient
-import com.hereliesaz.pwncartharsis.models.Listener
-import com.hereliesaz.pwncartharsis.models.LootItem
+import com.hereliesaz.pwncatharsis.data.remote.ApiClient
+import com.hereliesaz.pwncatharsis.models.Listener
+import com.hereliesaz.pwncatharsis.models.LootItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import okhttp3.MultipartBody

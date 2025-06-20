@@ -2,7 +2,9 @@ package com.hereliesaz.pwncatharsis.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val DarkBackground = Color(0xFF121212)
-val DarkSurface = Color(0xFF1E1E1E)
-val PrimaryAccent = Color(0xFFBB86FC)
-val OnDark = Color(0xFFE0E0E0)
+val Charcoal = Color(0xFF1A1A1D)
+val DarkGray = Color(0xFF28282B)
+val CyberGreen = Color(0xFF39FF14)
+val CyberPurple = Color(0xFFC700FF)
+val LightGray = Color(0xFFD3D3D3)
+val ErrorRed = Color(0xFFFF3131)

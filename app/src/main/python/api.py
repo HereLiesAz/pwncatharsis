@@ -1,6 +1,5 @@
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, File, UploadFile
-from typing import List
-from pydantic import BaseModel
+import asyncio
+from fastapi import APIRouter, HTTPException, WebSocket, UploadFile, File
 from .session_manager import session_manager
 from starlette.responses import FileResponse
 
@@ -8,15 +7,15 @@ router = APIRouter()
 
 
 class ListenerRequest(BaseModel):
-    listener_uri: str
+    uri: str
 
 
 @router.post("/listeners")
 async def create_listener(request: ListenerRequest):
     """Creates a new listener."""
     try:
-        listener_id = await session_manager.create_listener(request.listener_uri)
-        return {"listener_id": listener_id}
+        listener_id = await asyncio.to_thread(session_manager.create_listener, request.uri)
+        return {"id": listener_id, "uri": request.uri}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -24,14 +23,14 @@ async def create_listener(request: ListenerRequest):
 @router.get("/listeners")
 async def get_listeners():
     """Returns a list of active listeners."""
-    return await session_manager.get_listeners()
+    return await asyncio.to_thread(session_manager.get_listeners)
 
 
 @router.delete("/listeners/{listener_id}")
 async def remove_listener(listener_id: int):
     """Removes a listener."""
     try:
-        await session_manager.remove_listener(listener_id)
+        await asyncio.to_thread(session_manager.remove_listener, listener_id)
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -40,7 +39,7 @@ async def remove_listener(listener_id: int):
 @router.get("/sessions")
 async def get_sessions():
     """Returns a list of active sessions."""
-    return await session_manager.get_sessions()
+    return await asyncio.to_thread(session_manager.get_sessions)
 
 
 @router.websocket("/sessions/{session_id}/ws")
@@ -62,8 +61,8 @@ async def list_files(session_id: int, path: str = "/"):
 async def read_file(session_id: int, path: str):
     """Reads the content of a file."""
     try:
-        content, name = await session_manager.read_file(session_id, path)
-        return {"name": name, "content": content}
+        content = await session_manager.read_file(session_id, path)
+        return {"content": content}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -72,7 +71,8 @@ async def read_file(session_id: int, path: str):
 async def upload_file(session_id: int, destination_path: str, file: UploadFile = File(...)):
     """Uploads a file to the target session."""
     try:
-        return await session_manager.upload_file(session_id, file, destination_path)
+        content = await file.read()
+        return await session_manager.upload_file(session_id, content, destination_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -81,7 +81,9 @@ async def upload_file(session_id: int, destination_path: str, file: UploadFile =
 async def download_file(session_id: int, path: str):
     """Downloads a file from the target session."""
     try:
-        return await session_manager.download_file(session_id, path)
+        file_path, filename = await session_manager.download_file(session_id, path)
+        return FileResponse(path=file_path, filename=filename,
+                            media_type='application/octet-stream')
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"File not found or error downloading: {e}")
 
@@ -90,49 +92,12 @@ async def download_file(session_id: int, path: str):
 async def list_processes(session_id: int):
     """Lists processes in a session."""
     try:
-        return await session_manager.list_processes(session_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.delete("/sessions/{session_id}/ps/{pid}")
-async def kill_process(session_id: int, pid: int):
-    """Kills a process by its PID."""
-    try:
-        await session_manager.kill_process(session_id, pid)
-        return {"status": "success"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.get("/sessions/{session_id}/net")
-async def get_network_info(session_id: int):
-    """Gets network interface information."""
-    try:
-        return await session_manager.get_network_info(session_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.get("/sessions/{session_id}/loot")
-async def get_loot(session_id: int):
-    """Finds and returns loot from the session."""
-    try:
-        return await session_manager.find_loot(session_id)
+        return await asyncio.to_thread(session_manager.list_processes, session_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/sessions/{session_id}/privesc")
-async def get_privesc(session_id: int):
-    """Gets cached privilege escalation vulnerabilities."""
-    try:
-        return await session_manager.get_privesc_facts(session_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.post("/sessions/{session_id}/privesc")
 async def check_privesc(session_id: int):
     """Runs a new check for privilege escalation vulnerabilities."""
     try:

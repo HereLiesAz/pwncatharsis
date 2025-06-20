@@ -1,10 +1,25 @@
-package com.hereliesaz.pwncartharsis.data.remote
+package com.hereliesaz.pwncatharsis.data.remote
 
-import com.hereliesaz.pwncartharsis.models.*
+import com.hereliesaz.pwncatharsis.models.ExploitResult
+import com.hereliesaz.pwncatharsis.models.FileContent
+import com.hereliesaz.pwncatharsis.models.FileUploadResult
+import com.hereliesaz.pwncatharsis.models.FilesystemItem
+import com.hereliesaz.pwncatharsis.models.Listener
+import com.hereliesaz.pwncatharsis.models.LootItem
+import com.hereliesaz.pwncatharsis.models.NetworkInfo
+import com.hereliesaz.pwncatharsis.models.PrivescFinding
+import com.hereliesaz.pwncatharsis.models.Session
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -57,7 +72,7 @@ interface ApiService {
 
     // Processes
     @GET("sessions/{id}/ps")
-    suspend fun listProcesses(@Path("id") sessionId: Int): Response<List<com.hereliesaz.pwncartharsis.models.Process>>
+    suspend fun listProcesses(@Path("id") sessionId: Int): Response<List<com.hereliesaz.pwncatharsis.models.Process>>
 
     // Network
     @GET("sessions/{id}/net")

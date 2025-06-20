@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.chaquo.python")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -74,22 +75,15 @@ android {
 
 chaquopy {
     defaultConfig {
-        version = "3.12"
         pip {
-            install("-r", "requirements.txt")
+            install("-r", "src/main/python/requirements.txt")
 
         }
         pyc {
             src = false
         }
     }
-    productFlavors {
-        getByName("py313") { version = "3.13" }
 
-    }
-    sourceSets {
-        getByName("main")
-    }
 }
 dependencies {
     // Core Android & Jetpack
@@ -102,7 +96,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.material3)
 
     // ViewModel for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -127,5 +121,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.material)
+
 
 }
