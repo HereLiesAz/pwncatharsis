@@ -12,9 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the main screen, managing UI state for listeners and sessions.
- */
 class MainViewModel : ViewModel() {
 
     private val repository = PwncatRepository()
@@ -34,7 +31,7 @@ class MainViewModel : ViewModel() {
             while (true) {
                 fetchListeners()
                 fetchSessions()
-                _isLoading.value = false
+                if (_isLoading.value) _isLoading.value = false
                 delay(2000) // Poll every 2 seconds
             }
         }
@@ -66,23 +63,13 @@ class MainViewModel : ViewModel() {
 
     fun createListener(uri: String) {
         viewModelScope.launch {
-            try {
-                repository.createListener(uri)
-                fetchListeners() // Refresh list after creation
-            } catch (e: Exception) {
-                // Handle error
-            }
+            repository.createListener(uri).collect() // Refresh list after creation
         }
     }
 
     fun deleteListener(listenerId: Int) {
         viewModelScope.launch {
-            try {
-                repository.deleteListener(listenerId)
-                fetchListeners() // Refresh list after deletion
-            } catch (e: Exception) {
-                // Handle error
-            }
+            repository.deleteListener(listenerId).collect()
         }
     }
 }

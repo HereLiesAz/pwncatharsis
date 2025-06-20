@@ -1,66 +1,84 @@
 package com.hereliesaz.pwncatharsis.data
 
-import com.hereliesaz.pwncatharsis.data.remote.ApiClient
+import com.chaquo.python.PyObject
+import com.chaquo.python.Python
+import com.hereliesaz.pwncatharsis.models.FilesystemItem
 import com.hereliesaz.pwncatharsis.models.Listener
-import com.hereliesaz.pwncatharsis.models.LootItem
+import com.hereliesaz.pwncatharsis.models.Session
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.WebSocket
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
-class PwncatRepository(private val client: OkHttpClient) {
+class PwncatRepository {
 
-    private val apiService = ApiClient.apiService
-    private val _webSocketEvents = MutableSharedFlow<String>(replay = 1)
-    val webSocketEvents: Flow<String> = _webSocketEvents
+    private val python = Python.getInstance()
+    private val sessionManager: PyObject = python.getModule("session_manager")
 
-    // --- Listeners ---
-    suspend fun getListeners() = apiService.getListeners()
-    suspend fun createListener(listener: Listener) = apiService.createListener(listener)
-    suspend fun deleteListener(id: Int) = apiService.deleteListener(id)
-
-    // --- Sessions ---
-    suspend fun getSessions() = apiService.getSessions()
-    suspend fun getSession(sessionId: Int) = apiService.getSession(sessionId)
-    suspend fun deleteSession(sessionId: Int) = apiService.deleteSession(sessionId)
-
-
-    // --- WebSocket ---
-    fun connectToSession(sessionId: Int, listener: SessionWebSocketListener): WebSocket {
-        val request = Request.Builder()
-            .url("ws://127.0.0.1:8000/api/sessions/$sessionId/ws")
-            .build()
-        return client.newWebSocket(request, listener)
+    init {
+        // Initialize the pwncat manager once
+        sessionManager.callAttr("initialize_manager")
     }
 
-    // --- Filesystem ---
-    suspend fun listFiles(sessionId: Int, path: String) = apiService.listFiles(sessionId, path)
-    suspend fun readFile(sessionId: Int, path: String) = apiService.readFile(sessionId, path)
-    suspend fun uploadFile(sessionId: Int, path: String, file: MultipartBody.Part) =
-        apiService.uploadFile(sessionId, path, file)
+    private fun <T> toKotlinObject(pyObject: PyObject, clazz: Class<T>): T {
+        return pyObject.toJava(clazz)
+    }
 
-    suspend fun downloadFile(sessionId: Int, path: String) =
-        apiService.downloadFile(sessionId, path)
+    fun getListeners(): Flow<List<Listener>> = flow {
+        val listenersPy = sessionManager.callAttr("get_listeners").asList()
+        val listeners = listenersPy.map { pyObj ->
+            val listenerMap = pyObj.asMap()
+            Listener(
+                id = listenerMap[PyObject.fromInt("id")]?.toInt() ?: -1,
+                uri = listenerMap[PyObject.fromString("uri")].toString()
+            )
+        }
+        emit(listeners)
+    }.flowOn(Dispatchers.IO)
+
+    fun createListener(uri: String) = flow {
+        sessionManager.callAttr("create_listener", uri)
+        emit(Unit) // We just trigger a refresh, could also return the new listener
+    }.flowOn(Dispatchers.IO)
 
 
-    // --- Processes ---
-    suspend fun listProcesses(sessionId: Int) = apiService.listProcesses(sessionId)
+    fun deleteListener(listenerId: Int) = flow {
+        sessionManager.callAttr("remove_listener", listenerId)
+        emit(Unit)
+    }.flowOn(Dispatchers.IO)
 
-    // --- Network ---
-    suspend fun getNetworkInfo(sessionId: Int) = apiService.getNetworkInfo(sessionId)
 
-    // --- Privesc ---
-    suspend fun getPrivescFindings(sessionId: Int) = apiService.getPrivescFindings(sessionId)
-    suspend fun runPrivescScan(sessionId: Int) = apiService.runPrivescScan(sessionId)
+    fun getSessions(): Flow<List<Session>> = flow {
+        val sessionsPy = sessionManager.callAttr("get_sessions").asList()
+        val sessions = sessionsPy.map { pyObj ->
+            val sessionMap = pyObj.asMap()
+            Session(
+                id = sessionMap[PyObject.fromString("id")]!!.toInt(),
+                platform = sessionMap[PyObject.fromString("platform")].toString()
+            )
+        }
+        emit(sessions)
+    }.flowOn(Dispatchers.IO)
 
-    // --- Loot ---
-    suspend fun getLoot(sessionId: Int) = apiService.getLoot(sessionId)
-    suspend fun addLoot(sessionId: Int, loot: LootItem) = apiService.addLoot(sessionId, loot)
+    fun startInteractiveSession(sessionId: Int, listener: TerminalListener) {
+        // Pass the Kotlin object directly to Python
+        sessionManager.callAttr("start_interactive_session", sessionId, PyObject.fromJava(listener))
+    }
 
-    // --- Exploit ---
-    suspend fun runExploit(sessionId: Int, technique: String) =
-        apiService.runExploit(sessionId, mapOf("technique" to technique))
+    fun sendToTerminal(sessionId: Int, command: String) {
+        sessionManager.callAttr("send_to_terminal", sessionId, command)
+    }
 
+    fun listFiles(sessionId: Int, path: String): Flow<List<FilesystemItem>> = flow {
+        val filesPy = sessionManager.callAttr("list_files", sessionId, path).asList()
+        val files = filesPy.map { pyObj ->
+            val fileMap = pyObj.asMap()
+            FilesystemItem(
+                name = fileMap[PyObject.fromString("name")].toString(),
+                path = fileMap[PyObject.fromString("path")].toString(),
+                isDir = fileMap[PyObject.fromString("is_dir")]!!.toBoolean()
+            )
+        }
+        emit(files)
+    }.flowOn(Dispatchers.IO)
 }

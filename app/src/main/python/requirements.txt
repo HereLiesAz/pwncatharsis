@@ -1,4 +1,1 @@
-fastapi
-uvicorn[standard]
 pwncat-cs
-python-multipart

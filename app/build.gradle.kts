@@ -87,13 +87,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Networking (Retrofit for REST, OkHttp for WebSockets)
-    implementation(libs.retrofit)
-    implementation(libs.converter.moshi)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
+
 
     // JSON Parsing
-    implementation(libs.moshi.kotlin)
 
     // DataStore for settings
     implementation(libs.androidx.datastore.preferences)
