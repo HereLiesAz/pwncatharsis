@@ -1,33 +1,39 @@
-# pwncatharsis
+# **pwncatharsis**
 
-*A GUI for ruin.*
+**pwncatharsis** is a native Android graphical interface for the pwncat-cs post-exploitation
+framework. It embeds the power of pwncat's session management and automation tools into a mobile,
+command-less UI.
 
-## I. Overview
+## **Philosophy**
 
-**pwncat: catharsis** is a graphical interface for the `pwncat` post-exploitation toolkit. It is
-designed to automate and visualize common post-exploitation tasks, providing an information-driven
-cockpit rather than a traditional command-line.
+The primary goal is a **"point-and-click"** post-exploitation experience. Instead of requiring
+manual command entry, **pwncatharsis** leverages a **perpetual enumeration engine** that works in
+the background to automatically find and present actionable intelligence.
 
-The interface is built with the philosophy that the user should never need to type a command.
-Instead, the backend engine perpetually enumerates the target, and the GUI provides a
-point-and-click interface to browse and interact with the results.
+The interactive terminal is still available as a powerful tool, but it is treated as a fallback, not
+the primary means of interaction.
 
-## II. Architecture
+## **Architecture**
 
-This project is a **client-server application**. The two components are separate and independent.
+This application is a self-contained native Android app that bundles the Python backend directly.
 
-### The Server (The Engine)
+* **Client:** The UI is built entirely with modern, native Android components using **Jetpack
+  Compose** and a Material 3 expressive theme.
+* **Backend:** The powerful pwncat-cs engine runs in a background thread within the Android app
+  itself, enabled by the **Chaquopy** Python integration library.
+* **Communication:** A **Direct API Bridge** is used for communication between the Kotlin frontend
+  and the embedded Python backend. This eliminates network overhead and provides a fast, stable, and
+  efficient connection between the UI and the pwncat engine.
 
-* **Technology:** Python, FastAPI
-* **Packaging:** Docker
-* **Role:** The server is the headless engine that runs the `pwncat-cs` library. It manages
-  listeners, sessions, and executes all commands on the target. It exposes its functionality over a
-  secure REST API.
+## **Key Features**
 
-### The Client (The GUI)
+* **Perpetual Enumeration:** Once a session is active, a background engine automatically and
+  continuously runs pwncat enumeration modules.
+* **Real-time Intelligence:** Watch discovered loot and vulnerabilities appear in a clean,
+  card-based UI as they are found—no manual refreshes needed.
+* **Listener & Session Management:** A full graphical interface for creating, viewing, and managing
+  listeners and active sessions.
+* **Integrated Terminal:** A raw, interactive terminal is available for every session, allowing for
+  manual intervention and command execution when necessary.
 
-* **Technology:** Flutter, Material 3
-* **Role:** The client is a multi-platform graphical application that provides the user interface.
-  It runs on Windows, macOS, Linux, Android, and iOS. It is entirely stateless and communicates with
-  a self-hosted server instance configured by the user.
-
+*This project is an exploration of mobile-first, GUI-driven offensive security tooling.*
