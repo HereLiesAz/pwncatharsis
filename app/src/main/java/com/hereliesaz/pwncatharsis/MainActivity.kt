@@ -3,7 +3,6 @@ package com.hereliesaz.pwncatharsis
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -90,7 +89,11 @@ fun AppNavigation() {
             }
         }
     ) { innerPadding ->
-        NavHost(navController, startDestination = BottomNavItem.Main.route, Modifier.padding(innerPadding)) {
+        NavHost(
+            navController,
+            startDestination = BottomNavItem.Main.route,
+            Modifier.padding(innerPadding)
+        ) {
             composable(BottomNavItem.Main.route) {
                 val mainViewModel: MainViewModel = viewModel()
                 MainScreen(
@@ -118,7 +121,11 @@ fun AppNavigation() {
 }
 
 
-sealed class BottomNavItem(var title: String, var icon: androidx.compose.ui.graphics.vector.ImageVector, var route: String) {
+sealed class BottomNavItem(
+    var title: String,
+    var icon: androidx.compose.ui.graphics.vector.ImageVector,
+    var route: String,
+) {
     object Main : BottomNavItem("Main", Icons.Default.Home, "main")
     object Transform : BottomNavItem("Transform", Icons.Default.Camera, "transform")
     object Reflow : BottomNavItem("Reflow", Icons.Default.Filter, "reflow")

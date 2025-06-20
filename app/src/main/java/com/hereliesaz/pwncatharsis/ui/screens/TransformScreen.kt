@@ -41,7 +41,9 @@ fun TransformScreen() {
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(

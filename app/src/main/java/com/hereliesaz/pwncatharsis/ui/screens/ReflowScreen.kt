@@ -14,7 +14,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ReflowScreen() {
     Box(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
