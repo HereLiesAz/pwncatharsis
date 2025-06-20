@@ -1,3 +1,5 @@
 wheel
-pwncat-cs
 netifaces
+python-rapidjson
+
+pwncat-cs
