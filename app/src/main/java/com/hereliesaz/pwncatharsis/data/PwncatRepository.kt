@@ -16,12 +16,8 @@ class PwncatRepository {
     private val sessionManager: PyObject = python.getModule("session_manager")
 
     init {
-        // Initialize the pwncat manager once
+        // Initialize the pwncat manager once when the repository is created
         sessionManager.callAttr("initialize_manager")
-    }
-
-    private fun <T> toKotlinObject(pyObject: PyObject, clazz: Class<T>): T {
-        return pyObject.toJava(clazz)
     }
 
     fun getListeners(): Flow<List<Listener>> = flow {
@@ -29,20 +25,20 @@ class PwncatRepository {
         val listeners = listenersPy.map { pyObj ->
             val listenerMap = pyObj.asMap()
             Listener(
-                id = listenerMap[PyObject.fromInt("id")]?.toInt() ?: -1,
+                id = listenerMap[PyObject.fromString("id")]?.toInt() ?: -1,
                 uri = listenerMap[PyObject.fromString("uri")].toString()
             )
         }
         emit(listeners)
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO) // Run Python calls off the main thread
 
-    fun createListener(uri: String) = flow {
+    fun createListener(uri: String): Flow<Unit> = flow {
         sessionManager.callAttr("create_listener", uri)
-        emit(Unit) // We just trigger a refresh, could also return the new listener
+        emit(Unit) // Emit a signal to trigger a refresh
     }.flowOn(Dispatchers.IO)
 
 
-    fun deleteListener(listenerId: Int) = flow {
+    fun deleteListener(listenerId: Int): Flow<Unit> = flow {
         sessionManager.callAttr("remove_listener", listenerId)
         emit(Unit)
     }.flowOn(Dispatchers.IO)
@@ -61,7 +57,7 @@ class PwncatRepository {
     }.flowOn(Dispatchers.IO)
 
     fun startInteractiveSession(sessionId: Int, listener: TerminalListener) {
-        // Pass the Kotlin object directly to Python
+        // Pass the Kotlin callback object directly to the Python function
         sessionManager.callAttr("start_interactive_session", sessionId, PyObject.fromJava(listener))
     }
 
@@ -80,5 +76,26 @@ class PwncatRepository {
             )
         }
         emit(files)
+    }.flowOn(Dispatchers.IO)
+
+    fun readFile(sessionId: Int, path: String): Flow<String> = flow {
+        val result = sessionManager.callAttr("read_file", sessionId, path).asMap()
+        val error = result[PyObject.fromString("error")]
+        if (error != null) {
+            throw Exception(error.toString())
+        } else {
+            emit(result[PyObject.fromString("content")].toString())
+        }
+    }.flowOn(Dispatchers.IO)
+
+    fun downloadFile(sessionId: Int, remotePath: String, localPath: String): Flow<String> = flow {
+        val result =
+            sessionManager.callAttr("download_file", sessionId, remotePath, localPath).asMap()
+        val error = result[PyObject.fromString("error")]
+        if (error != null) {
+            throw Exception(error.toString())
+        } else {
+            emit(result[PyObject.fromString("path")].toString())
+        }
     }.flowOn(Dispatchers.IO)
 }

@@ -1,9 +1,9 @@
 import threading
+import time
 from pwncat.manager import Manager
 
 # This is the global pwncat manager instance
 manager = Manager()
-
 
 def initialize_manager():
     """Initializes the pwncat manager's database."""
@@ -11,15 +11,73 @@ def initialize_manager():
         manager.initialize()
 
 
+def get_session(session_id: int):
+    """Retrieves a session by its ID."""
+    return manager.sessions.get(session_id, None)
+
+
+def start_persistent_enumeration(session_id: int, listener):
+    """
+    Runs enumeration modules in a loop and calls back to Kotlin
+    with discovered items.
+    """
+    session = get_session(session_id)
+    if not session:
+        return
+
+    def enumeration_loop():
+        """The main loop for the background thread."""
+        known_loot = set()
+        known_privesc = set()
+
+        while not session.raw_pty.closed:
+            # Enumerate Loot
+            try:
+                current_loot = list(session.find_loot())
+                for item in current_loot:
+                    # Use a unique tuple to identify the loot item
+                    item_key = (item.type, item.source, item.content)
+                    if item_key not in known_loot:
+                        known_loot.add(item_key)
+                        listener.onNewLoot({
+                            "type": item.type,
+                            "source": item.source,
+                            "content": item.content
+                        })
+            except Exception as e:
+                print(f"Loot enumeration failed: {e}")
+
+            # Enumerate Privesc
+            try:
+                current_privesc = list(session.enumerate_privesc())
+                for item in current_privesc:
+                    # Use the exploit title as a unique identifier
+                    if item.title not in known_privesc:
+                        known_privesc.add(item.title)
+                        listener.onNewPrivescFinding({
+                            "name": item.title,
+                            "description": item.description,
+                            "exploit_id": item.exploit
+                        })
+            except Exception as e:
+                print(f"Privesc enumeration failed: {e}")
+
+            # Wait before the next enumeration cycle
+            time.sleep(15)
+
+    # Run the enumeration in a background thread
+    thread = threading.Thread(target=enumeration_loop, daemon=True)
+    thread.start()
+
+
+# --- Other functions (create_listener, get_listeners, list_files, etc.) remain the same ---
 def create_listener(uri: str):
     """Creates a new listener and returns its ID and URI."""
     try:
         listener = manager.listen(uri)
         return {"id": listener.id, "uri": str(listener.server.getsockname())}
     except Exception as e:
-        # It's good practice to return error details
         return {"error": str(e)}
-
 
 def get_listeners():
     """Returns a list of active listeners."""
@@ -34,7 +92,6 @@ def remove_listener(listener_id: int):
     if listener:
         listener.stop()
 
-
 def get_sessions():
     """Returns a list of active sessions."""
     return [
@@ -44,12 +101,6 @@ def get_sessions():
         }
         for session in manager.sessions.values()
     ]
-
-
-def get_session(session_id: int):
-    """Retrieves a session by its ID."""
-    return manager.sessions.get(session_id, None)
-
 
 def start_interactive_session(session_id: int, callback):
     """
@@ -61,38 +112,28 @@ def start_interactive_session(session_id: int, callback):
         return
 
     def reader_thread():
-        """Reads from the session's PTY and sends data to the callback."""
         try:
             while not session.raw_pty.closed:
                 try:
                     data = session.raw_pty.read(4096, timeout=1)
                     if data:
-                        # Call the onOutput method on the Kotlin callback object
                         callback.onOutput(data.decode('utf-8', 'ignore'))
                 except EOFError:
                     break
         finally:
-            # Notify the client that the session has closed
             callback.onClose()
 
-    # The PTY might not exist until a command is run, ensure it's there.
     if session.raw_pty is None:
-        session.run(" ")  # Run a dummy command to initialize PTY
+        session.run(" ")
 
-    # Run the reader in a background thread so it doesn't block
     thread = threading.Thread(target=reader_thread, daemon=True)
     thread.start()
 
-
 def send_to_terminal(session_id: int, command: str):
-    """Sends an input string to the session's PTY."""
     session = get_session(session_id)
     if session and session.raw_pty:
         session.raw_pty.write(command.encode('utf-8'))
 
-
-# Add other direct-callable functions here for filesystem, privesc, etc.
-# For example:
 def list_files(session_id: int, path: str):
     session = get_session(session_id)
     if not session:
@@ -106,5 +147,29 @@ def list_files(session_id: int, path: str):
                 "is_dir": file.is_dir
             })
         return results
-    except Exception:
-        return []  # Return empty on error
+    except Exception as e:
+        print(f"Error listing files at {path}: {e}")
+        return []
+
+
+def read_file(session_id: int, path: str):
+    session = get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    try:
+        with session.platform.fs.open(path, "r") as f:
+            content = f.read(1024 * 1024)
+            return {"content": content}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def download_file(session_id: int, remote_path: str, local_path: str):
+    session = get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    try:
+        session.platform.fs.download(remote_path, local_path)
+        return {"path": local_path}
+    except Exception as e:
+        return {"error": str(e)}
