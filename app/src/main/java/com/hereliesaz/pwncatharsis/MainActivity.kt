@@ -5,18 +5,41 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.hereliesaz.pwncatharsis.ui.screens.*
+import com.hereliesaz.pwncatharsis.ui.screens.DashboardScreen
+import com.hereliesaz.pwncatharsis.ui.screens.ExploitScreen
+import com.hereliesaz.pwncatharsis.ui.screens.PillageScreen
+import com.hereliesaz.pwncatharsis.ui.screens.ReconScreen
+import com.hereliesaz.pwncatharsis.ui.screens.SessionScreen
+import com.hereliesaz.pwncatharsis.ui.screens.SettingsScreen
 import com.hereliesaz.pwncatharsis.ui.theme.PwncatharsisTheme
+import com.hereliesaz.pwncatharsis.viewmodel.MainViewModel
+import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModel
+import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
@@ -41,11 +64,12 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val navController = rememberNavController()
     val screens = listOf(
-        BottomNavItem.Main,
-        BottomNavItem.Transform,
-        BottomNavItem.Reflow,
-        BottomNavItem.Slideshow
+        BottomNavItem.Dashboard,
+        BottomNavItem.Recon,
+        BottomNavItem.Exploit,
+        BottomNavItem.Pillage
     )
+    val mainViewModel: MainViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -70,7 +94,7 @@ fun AppNavigation() {
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
@@ -84,21 +108,20 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController,
-            startDestination = BottomNavItem.Main.route,
+            startDestination = BottomNavItem.Dashboard.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Main.route) {
-                val mainViewModel: MainViewModel = viewModel()
-                MainScreen(
+            composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
+            composable(BottomNavItem.Recon.route) { ReconScreen(viewModel = mainViewModel) }
+            composable(BottomNavItem.Exploit.route) {
+                ExploitScreen(
                     viewModel = mainViewModel,
                     onSessionClick = { sessionId ->
                         navController.navigate("session/$sessionId")
                     }
                 )
             }
-            composable(BottomNavItem.Transform.route) { TransformScreen() }
-            composable(BottomNavItem.Reflow.route) { ReflowScreen() }
-            composable(BottomNavItem.Slideshow.route) { SlideshowScreen() }
+            composable(BottomNavItem.Pillage.route) { PillageScreen() }
             composable("settings") { SettingsScreen(onBack = { navController.popBackStack() }) }
             composable("session/{sessionId}") { backStackEntry ->
                 val sessionId = backStackEntry.arguments?.getString("sessionId")?.toIntOrNull()
@@ -119,11 +142,11 @@ fun AppNavigation() {
 
 sealed class BottomNavItem(
     var title: String,
-    var icon: androidx.compose.ui.graphics.vector.ImageVector,
+    var icon: ImageVector,
     var route: String,
 ) {
-    object Main : BottomNavItem("Main", Icons.Default.Home, "main")
-    object Transform : BottomNavItem("Transform", Icons.Default.Camera, "transform")
-    object Reflow : BottomNavItem("Reflow", Icons.Default.Filter, "reflow")
-    object Slideshow : BottomNavItem("Slideshow", Icons.Default.Slideshow, "slideshow")
+    object Dashboard : BottomNavItem("Dashboard", Icons.Default.Home, "dashboard")
+    object Recon : BottomNavItem("Recon", Icons.Default.Search, "recon")
+    object Exploit : BottomNavItem("Exploit", Icons.Default.FlashOn, "exploit")
+    object Pillage : BottomNavItem("Pillage", Icons.Default.Archive, "pillage")
 }

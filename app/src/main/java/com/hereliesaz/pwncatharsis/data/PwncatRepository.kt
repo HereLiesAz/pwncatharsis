@@ -98,4 +98,14 @@ class PwncatRepository {
             emit(result[PyObject.fromString("path")].toString())
         }
     }.flowOn(Dispatchers.IO)
+
+    fun runExploit(sessionId: Int, exploitId: String): Flow<String> = flow {
+        val result = sessionManager.callAttr("run_exploit", sessionId, exploitId).asMap()
+        val error = result[PyObject.fromString("error")]
+        if (error != null) {
+            throw Exception(error.toString())
+        } else {
+            emit(result[PyObject.fromString("output")].toString())
+        }
+    }.flowOn(Dispatchers.IO)
 }

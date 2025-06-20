@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SlideshowScreen() {
+fun DashboardScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -20,7 +20,7 @@ fun SlideshowScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "This is the Slideshow Screen.",
+            text = "pwncatharsis: A vessel for your digital angst.",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )

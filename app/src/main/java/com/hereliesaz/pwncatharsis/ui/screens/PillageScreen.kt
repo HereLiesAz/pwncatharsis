@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ReflowScreen() {
+fun PillageScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -20,7 +20,7 @@ fun ReflowScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "This is the Reflow Screen.",
+            text = "Pillage Screen: To the victor go the spoils.",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )

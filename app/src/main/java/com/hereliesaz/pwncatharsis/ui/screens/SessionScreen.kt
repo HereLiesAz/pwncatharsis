@@ -1,5 +1,6 @@
 package com.hereliesaz.pwncatharsis.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.hereliesaz.pwncatharsis.models.FilesystemItem
 import com.hereliesaz.pwncatharsis.models.LootItem
 import com.hereliesaz.pwncatharsis.models.PrivescFinding
 import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModel
@@ -23,11 +27,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionScreen(viewModel: SessionViewModel, onBack: () -> Unit) {
+    var tabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf("Overview", "Terminal", "Filesystem")
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Session") },
+                title = { Text("Session ${viewModel.currentPath.collectAsState().value}") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -36,23 +42,32 @@ fun SessionScreen(viewModel: SessionViewModel, onBack: () -> Unit) {
             )
         }
     ) { paddingValues ->
-        // The main layout is now a single column
         Column(modifier = Modifier.padding(paddingValues)) {
-            // The command-less, perpetual enumeration view
-            PerpetualEnumerationPane(viewModel = viewModel, modifier = Modifier.weight(1f))
-            // The interactive terminal, still available as a tool
-            TerminalPane(viewModel = viewModel, modifier = Modifier.height(200.dp))
+            TabRow(selectedTabIndex = tabIndex) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        text = { Text(title) },
+                        selected = tabIndex == index,
+                        onClick = { tabIndex = index }
+                    )
+                }
+            }
+            when (tabIndex) {
+                0 -> OverviewPane(viewModel = viewModel)
+                1 -> TerminalPane(viewModel = viewModel)
+                2 -> FilesystemPane(viewModel = viewModel)
+            }
         }
     }
 }
 
 @Composable
-fun PerpetualEnumerationPane(viewModel: SessionViewModel, modifier: Modifier = Modifier) {
+fun OverviewPane(viewModel: SessionViewModel) {
     val loot by viewModel.loot.collectAsState()
     val privesc by viewModel.privescFindings.collectAsState()
 
     LazyColumn(
-        modifier = modifier.padding(16.dp),
+        modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (privesc.isNotEmpty()) {
@@ -60,7 +75,9 @@ fun PerpetualEnumerationPane(viewModel: SessionViewModel, modifier: Modifier = M
                 Text("Privilege Escalation", style = MaterialTheme.typography.titleLarge)
             }
             items(privesc) { finding ->
-                PrivescCard(finding = finding)
+                PrivescCard(
+                    finding = finding,
+                    onRunExploit = { viewModel.runExploit(finding.exploitId) })
             }
         }
 
@@ -77,7 +94,7 @@ fun PerpetualEnumerationPane(viewModel: SessionViewModel, modifier: Modifier = M
 }
 
 @Composable
-fun PrivescCard(finding: PrivescFinding) {
+fun PrivescCard(finding: PrivescFinding, onRunExploit: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -90,6 +107,11 @@ fun PrivescCard(finding: PrivescFinding) {
                     Icons.Default.BugReport,
                     contentDescription = "Privesc Finding"
                 )
+            },
+            trailingContent = {
+                Button(onClick = onRunExploit) {
+                    Text("Run")
+                }
             }
         )
     }
@@ -110,7 +132,7 @@ fun LootCard(loot: LootItem) {
 }
 
 @Composable
-fun TerminalPane(viewModel: SessionViewModel, modifier: Modifier = Modifier) {
+fun TerminalPane(viewModel: SessionViewModel) {
     val terminalOutput by viewModel.terminalOutput.collectAsState()
     var textState by remember { mutableStateOf(TextFieldValue("")) }
     val scrollState = rememberScrollState()
@@ -122,7 +144,7 @@ fun TerminalPane(viewModel: SessionViewModel, modifier: Modifier = Modifier) {
         }
     }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = terminalOutput,
             modifier = Modifier
@@ -150,4 +172,43 @@ fun TerminalPane(viewModel: SessionViewModel, modifier: Modifier = Modifier) {
             }
         )
     }
+}
+
+@Composable
+fun FilesystemPane(viewModel: SessionViewModel) {
+    val files by viewModel.filesystemItems.collectAsState()
+    val currentPath by viewModel.currentPath.collectAsState()
+
+    Column {
+        Text(
+            text = "Current Path: $currentPath",
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
+        LazyColumn {
+            items(files) { item ->
+                FilesystemItemRow(item = item, onFileClick = {
+                    if (item.isDir) {
+                        viewModel.browseDirectory(item.path)
+                    } else {
+                        // Handle file click
+                    }
+                })
+            }
+        }
+    }
+}
+
+@Composable
+fun FilesystemItemRow(item: FilesystemItem, onFileClick: () -> Unit) {
+    ListItem(
+        headlineContent = { Text(item.name) },
+        leadingContent = {
+            Icon(
+                if (item.isDir) Icons.Default.Folder else Icons.Default.InsertDriveFile,
+                contentDescription = null
+            )
+        },
+        modifier = Modifier.clickable(onClick = onFileClick)
+    )
 }

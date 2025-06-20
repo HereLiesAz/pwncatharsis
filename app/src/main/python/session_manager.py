@@ -70,6 +70,20 @@ def start_persistent_enumeration(session_id: int, listener):
     thread.start()
 
 
+def run_exploit(session_id: int, exploit_id: str):
+    """Runs a privesc exploit."""
+    session = get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    try:
+        # This is a simplified example. A real implementation would need to
+        # handle the exploit's parameters and return value more robustly.
+        result = session.run(f"exploit {exploit_id}")
+        return {"output": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # --- Other functions (create_listener, get_listeners, list_files, etc.) remain the same ---
 def create_listener(uri: str):
     """Creates a new listener and returns its ID and URI."""

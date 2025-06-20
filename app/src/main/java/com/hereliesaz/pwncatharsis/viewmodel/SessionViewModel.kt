@@ -7,12 +7,14 @@ import com.chaquo.python.PyObject
 import com.hereliesaz.pwncatharsis.data.EnumerationListener
 import com.hereliesaz.pwncatharsis.data.PwncatRepository
 import com.hereliesaz.pwncatharsis.data.TerminalListener
+import com.hereliesaz.pwncatharsis.models.FilesystemItem
 import com.hereliesaz.pwncatharsis.models.LootItem
 import com.hereliesaz.pwncatharsis.models.PrivescFinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class SessionViewModel(private val sessionId: Int) : ViewModel() {
@@ -29,6 +31,13 @@ class SessionViewModel(private val sessionId: Int) : ViewModel() {
     // --- State for the Terminal (still available as a tool) ---
     private val _terminalOutput = MutableStateFlow("")
     val terminalOutput: StateFlow<String> = _terminalOutput.asStateFlow()
+
+    // --- State for the Filesystem Browser ---
+    private val _filesystemItems = MutableStateFlow<List<FilesystemItem>>(emptyList())
+    val filesystemItems: StateFlow<List<FilesystemItem>> = _filesystemItems.asStateFlow()
+
+    private val _currentPath = MutableStateFlow("/")
+    val currentPath: StateFlow<String> = _currentPath.asStateFlow()
 
     init {
         // Define the enumeration listener
@@ -69,11 +78,39 @@ class SessionViewModel(private val sessionId: Int) : ViewModel() {
             repository.startInteractiveSession(sessionId, terminalListener)
             repository.startPersistentEnumeration(sessionId, enumerationListener)
         }
+
+        // Initial file list
+        browseDirectory("/")
     }
 
     fun sendToTerminal(input: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.sendToTerminal(sessionId, input)
+        }
+    }
+
+    fun browseDirectory(path: String) {
+        viewModelScope.launch {
+            _currentPath.value = path
+            repository.listFiles(sessionId, path)
+                .catch {
+                    // Handle error
+                }
+                .collect { items ->
+                    _filesystemItems.value = items
+                }
+        }
+    }
+
+    fun runExploit(exploitId: String) {
+        viewModelScope.launch {
+            repository.runExploit(sessionId, exploitId)
+                .catch {
+                    // Handle error
+                }
+                .collect { output ->
+                    _terminalOutput.value += "\n--- EXPLOIT: $exploitId ---\n$output\n"
+                }
         }
     }
 }
