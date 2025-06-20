@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.hereliesaz.pwncatharsis"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1"
 
@@ -78,6 +78,9 @@ chaquopy {
         pip {
             install("-r", "requirements.txt")
 
+        }
+        pyc {
+            src = false
         }
     }
     productFlavors {
