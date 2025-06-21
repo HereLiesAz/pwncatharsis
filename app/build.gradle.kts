@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.chaquo.python")
     alias(libs.plugins.compose.compiler)
+    kotlin("kapt")
 }
 
 android {
@@ -79,6 +80,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.material)
 
     // Jetpack Compose
     implementation(platform(libs.compose.bom))
@@ -91,14 +93,13 @@ dependencies {
     // ViewModel for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Add these dependencies
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
 
-    // Networking (Retrofit for REST, OkHttp for WebSockets)
-
-
     // JSON Parsing
+    implementation(libs.moshi.kotlin)
+    kapt(libs.moshi.kotlin.codegen)
+
 
     // DataStore for settings
     implementation(libs.androidx.datastore.preferences)

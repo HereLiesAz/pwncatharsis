@@ -25,8 +25,8 @@ class PwncatRepository {
         val listeners = listenersPy.map { pyObj ->
             val listenerMap = pyObj.asMap()
             Listener(
-                id = listenerMap[PyObject.fromString("id")]?.toInt() ?: -1,
-                uri = listenerMap[PyObject.fromString("uri")].toString()
+                id = listenerMap[PyObject.fromJava("id")]?.toInt() ?: -1,
+                uri = listenerMap[PyObject.fromJava("uri")].toString()
             )
         }
         emit(listeners)
@@ -49,8 +49,8 @@ class PwncatRepository {
         val sessions = sessionsPy.map { pyObj ->
             val sessionMap = pyObj.asMap()
             Session(
-                id = sessionMap[PyObject.fromString("id")]!!.toInt(),
-                platform = sessionMap[PyObject.fromString("platform")].toString()
+                id = sessionMap[PyObject.fromJava("id")]!!.toInt(),
+                platform = sessionMap[PyObject.fromJava("platform")].toString()
             )
         }
         emit(sessions)
@@ -59,6 +59,14 @@ class PwncatRepository {
     fun startInteractiveSession(sessionId: Int, listener: TerminalListener) {
         // Pass the Kotlin callback object directly to the Python function
         sessionManager.callAttr("start_interactive_session", sessionId, PyObject.fromJava(listener))
+    }
+
+    fun startPersistentEnumeration(sessionId: Int, listener: EnumerationListener) {
+        sessionManager.callAttr(
+            "start_persistent_enumeration",
+            sessionId,
+            PyObject.fromJava(listener)
+        )
     }
 
     fun sendToTerminal(sessionId: Int, command: String) {
@@ -70,9 +78,9 @@ class PwncatRepository {
         val files = filesPy.map { pyObj ->
             val fileMap = pyObj.asMap()
             FilesystemItem(
-                name = fileMap[PyObject.fromString("name")].toString(),
-                path = fileMap[PyObject.fromString("path")].toString(),
-                isDir = fileMap[PyObject.fromString("is_dir")]!!.toBoolean()
+                name = fileMap[PyObject.fromJava("name")].toString(),
+                path = fileMap[PyObject.fromJava("path")].toString(),
+                isDir = fileMap[PyObject.fromJava("is_dir")]!!.toBoolean()
             )
         }
         emit(files)
@@ -80,32 +88,32 @@ class PwncatRepository {
 
     fun readFile(sessionId: Int, path: String): Flow<String> = flow {
         val result = sessionManager.callAttr("read_file", sessionId, path).asMap()
-        val error = result[PyObject.fromString("error")]
+        val error = result[PyObject.fromJava("error")]
         if (error != null) {
             throw Exception(error.toString())
         } else {
-            emit(result[PyObject.fromString("content")].toString())
+            emit(result[PyObject.fromJava("content")].toString())
         }
     }.flowOn(Dispatchers.IO)
 
     fun downloadFile(sessionId: Int, remotePath: String, localPath: String): Flow<String> = flow {
         val result =
             sessionManager.callAttr("download_file", sessionId, remotePath, localPath).asMap()
-        val error = result[PyObject.fromString("error")]
+        val error = result[PyObject.fromJava("error")]
         if (error != null) {
             throw Exception(error.toString())
         } else {
-            emit(result[PyObject.fromString("path")].toString())
+            emit(result[PyObject.fromJava("path")].toString())
         }
     }.flowOn(Dispatchers.IO)
 
     fun runExploit(sessionId: Int, exploitId: String): Flow<String> = flow {
         val result = sessionManager.callAttr("run_exploit", sessionId, exploitId).asMap()
-        val error = result[PyObject.fromString("error")]
+        val error = result[PyObject.fromJava("error")]
         if (error != null) {
             throw Exception(error.toString())
         } else {
-            emit(result[PyObject.fromString("output")].toString())
+            emit(result[PyObject.fromJava("output")].toString())
         }
     }.flowOn(Dispatchers.IO)
 }
