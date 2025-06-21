@@ -1,14 +1,14 @@
 package com.hereliesaz.pwncatharsis.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Represents the content of a file.
  *
  * @property content The text content of the file.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class FileContent(
-    @Json(name = "content") val content: String,
+    @SerialName("content") val content: String,
 )

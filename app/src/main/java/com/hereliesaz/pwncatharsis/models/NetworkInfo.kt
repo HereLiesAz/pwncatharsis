@@ -1,6 +1,6 @@
 package com.hereliesaz.pwncatharsis.models
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 /**
  * Represents network interface information.
@@ -10,7 +10,7 @@ import com.squareup.moshi.JsonClass
  * @property netmask The netmask of the interface.
  * @property broadcast The broadcast address of the interface.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkInfo(
     val name: String,
     val address: String,

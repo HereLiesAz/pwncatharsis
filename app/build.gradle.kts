@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.chaquo.python")
     alias(libs.plugins.compose.compiler)
-    kotlin("kapt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -97,8 +97,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     // JSON Parsing
-    implementation(libs.moshi.kotlin)
-    kapt(libs.moshi.kotlin.codegen)
+    implementation(libs.kotlinx.serialization.json)
 
 
     // DataStore for settings

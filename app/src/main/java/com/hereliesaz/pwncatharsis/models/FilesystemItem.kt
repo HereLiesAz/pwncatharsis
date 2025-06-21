@@ -1,7 +1,7 @@
 package com.hereliesaz.pwncatharsis.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Represents an item in a remote filesystem.
@@ -10,9 +10,9 @@ import com.squareup.moshi.JsonClass
  * @property path The full path to the item.
  * @property isDir Whether the item is a directory.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class FilesystemItem(
     val name: String,
     val path: String,
-    @Json(name = "is_dir") val isDir: Boolean,
+    @SerialName("is_dir") val isDir: Boolean,
 )

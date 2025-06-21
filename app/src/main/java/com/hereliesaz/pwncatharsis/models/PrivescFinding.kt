@@ -1,7 +1,7 @@
 package com.hereliesaz.pwncatharsis.models
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a potential privilege escalation finding.
@@ -10,9 +10,9 @@ import com.squareup.moshi.JsonClass
  * @property description A description of the finding.
  * @property exploitId The identifier for the exploit technique.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class PrivescFinding(
     val name: String,
     val description: String,
-    @Json(name = "exploit_id") val exploitId: String,
+    @SerialName("exploit_id") val exploitId: String,
 )

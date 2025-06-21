@@ -1,6 +1,6 @@
 package com.hereliesaz.pwncatharsis.models
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 /**
  * Represents the result of a file upload operation.
@@ -8,7 +8,7 @@ import com.squareup.moshi.JsonClass
  * @property message A status message.
  * @property path The path where the file was uploaded.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class FileUploadResult(
     val message: String,
     val path: String,
