@@ -72,12 +72,25 @@ STATUS: ACTIVE
 ENTRY 8: NATIVE DEPENDENCY MANAGEMENT
 TIMESTAMP: 2025-06-20 23:58:20 UTC
 DECISION: The `pwncat-cs` dependency will be vendored directly into the project's source code
-instead of being installed from PyPI. The `python-rapidjson` dependency, which requires a C
-compiler, will
-be removed from `pwncat-cs`'s `pyproject.toml` to allow it to fall back to the standard `json`
-library.
+instead
+of being installed from PyPI. The `python-rapidjson` dependency, which requires a C compiler, will
+be
+removed from `pwncat-cs`'s `pyproject.toml` to allow it to fall back to the standard `json` library.
 REASONING: The Chaquopy build environment cannot compile C extensions like `python-rapidjson` out of
 the box. All attempts to install `pwncat-cs` directly from `pip` failed due to this issue. Vendoring
 the dependency and modifying it to remove the C extension is the most robust solution to this
 problem, as it avoids the need for a complex cross-compilation toolchain.
+STATUS: OBSOLETE
+
+ENTRY 9: DEPENDENCY PIVOT
+TIMESTAMP: 2025-06-21 00:11:00 UTC
+DECISION: The project will switch from `pwncat-cs` to the original `pwncat` by `cytopia` (
+distributed
+as `pwncat-ci` on PyPI). This will require a complete rewrite of the `session_manager.py` to adapt
+to
+the new API.
+REASONING: The user explicitly requested this change to avoid the persistent native dependency
+issues with `pwncat-cs`. While this requires a significant refactoring of the Python backend, it is
+a
+cleaner solution that avoids the need to vendor and modify a dependency.
 STATUS: ACTIVE
