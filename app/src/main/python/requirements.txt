@@ -1,6 +1,1 @@
-wheel
-
-
-pwncat
-
-
+# All dependencies are now provided as source files.

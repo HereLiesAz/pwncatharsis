@@ -60,13 +60,12 @@ android {
     ndkVersion = "27.0.12077973"
 }
 
-// This is the correct location and structure for the Chaquopy configuration.
 chaquopy {
     defaultConfig {
-        pip {
-            // The path must be relative to the module root.
-            install("-r", "src/main/python/requirements.txt")
-        }
+        buildPython("C:/Users/azrie/python-3.13.5-embed-amd64/python.exe", "-3.13")
+        // All python dependencies are provided as local source files.
+        // No pip configuration is needed.
+        version = "3.13"
     }
 }
 
