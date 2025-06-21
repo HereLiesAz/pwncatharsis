@@ -1,5 +1,6 @@
 wheel
 netifaces
-pwncat-cs
+
+pwncat
 
 

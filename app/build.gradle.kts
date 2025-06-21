@@ -54,15 +54,16 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "36.0.0"
+    ndkVersion = "27.0.12077973"
 }
 
 // Chaquopy python configuration block
 chaquopy {
     defaultConfig {
         // pwncat-cs requires an older Python version. 3.9 is compatible.
-        version = "3.9"
         pip {
-            install("pwncat-cs")
+            install("pwncat")
 
         }
         pyc {
@@ -83,8 +84,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.material3)
-
-    // ViewModel for Compose
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.2")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha16")    // ViewModel for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Networking (Retrofit for REST, OkHttp for WebSockets)

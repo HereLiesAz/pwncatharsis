@@ -1,15 +1,4 @@
 <resources>
 
-    <style name="Theme.Pwncatharsis" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">@color/cyber_green</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorSecondary">@color/cyber_purple</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:colorBackground">@color/charcoal</item>
-        <item name="colorSurface">@color/dark_gray</item>
-        <item name="colorOnBackground">@color/light_gray</item>
-        <item name="colorOnSurface">@color/light_gray</item>
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-    </style>
-
+    <style name="Theme.Pwncatharsis" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
