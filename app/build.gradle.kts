@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.chaquo.python")
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -61,16 +61,11 @@ android {
     ndkVersion = "27.0.12077973"
 }
 
-// Chaquopy python configuration block
 chaquopy {
     defaultConfig {
-        // pwncat-cs requires an older Python version. 3.9 is compatible.
         pip {
-            install("pwncat")
-
-        }
-        pyc {
-            src = false
+            // Chaquopy will automatically install from requirements.txt
+            // No explicit install needed here anymore.
         }
     }
 }
