@@ -1,7 +1,13 @@
 package com.hereliesaz.pwncatharsis.viewmodel
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.wifi.ScanResult
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hereliesaz.pwncatharsis.data.NetworkManager
 import com.hereliesaz.pwncatharsis.data.PwncatRepository
 import com.hereliesaz.pwncatharsis.models.Listener
 import com.hereliesaz.pwncatharsis.models.LootItem
@@ -28,6 +34,16 @@ class MainViewModel : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // --- Network Analysis State (merged from NetworkViewModel) ---
+    private val _wifiNetworks = MutableStateFlow<List<ScanResult>>(emptyList())
+    val wifiNetworks: StateFlow<List<ScanResult>> = _wifiNetworks.asStateFlow()
+
+    private val _permissionGranted = MutableStateFlow(false)
+    val permissionGranted: StateFlow<Boolean> = _permissionGranted.asStateFlow()
+
+    private val _isScanning = MutableStateFlow(false)
+    val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -74,6 +90,32 @@ class MainViewModel : ViewModel() {
     fun deleteListener(listenerId: Int) {
         viewModelScope.launch {
             repository.deleteListener(listenerId).collect {}
+        }
+    }
+
+    // --- Network Analysis Functions ---
+    fun checkPermissions(context: Context) {
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        _permissionGranted.value = hasPermission
+    }
+
+    fun startWifiScan(context: Context) {
+        if (!_permissionGranted.value) return
+
+        viewModelScope.launch {
+            _isScanning.value = true
+            val networkManager = NetworkManager(context)
+            networkManager.getWifiScanResults()
+                .catch {
+                    _isScanning.value = false
+                }
+                .collect { scanResults ->
+                    _isScanning.value = false
+                    _wifiNetworks.value = scanResults.sortedByDescending { it.level }
+                }
         }
     }
 }

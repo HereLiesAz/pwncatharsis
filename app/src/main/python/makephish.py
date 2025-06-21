@@ -66,25 +66,20 @@ def generate_phishing_site(target_url, payload, output_dir):
             for resource in soup.find_all(tag):
                 if resource.has_attr(attr):
                     res_url = resource[attr]
-                    # Make URL absolute
                     abs_res_url = urljoin(target_url, res_url)
 
-                    # Create local path
                     parsed_url = urlparse(abs_res_url)
                     local_res_path = os.path.join(output_dir, parsed_url.netloc,
                                                   parsed_url.path.lstrip('/'))
 
-                    # Ensure directory exists
                     os.makedirs(os.path.dirname(local_res_path), exist_ok=True)
 
-                    # Download asset
                     try:
                         res_response = requests.get(abs_res_url, headers=headers)
                         if res_response.status_code == 200:
                             with open(local_res_path, 'wb') as f:
                                 f.write(res_response.content)
 
-                            # Rewrite the HTML to point to the local asset
                             relative_path = os.path.relpath(local_res_path, output_dir)
                             resource[attr] = relative_path
                     except Exception as e:

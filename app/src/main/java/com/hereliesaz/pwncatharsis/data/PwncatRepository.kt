@@ -26,11 +26,7 @@ class PwncatRepository {
     fun getListeners(): Flow<List<Listener>> = flow {
         val listenersPy = sessionManager.callAttr("get_listeners").asList()
         val listeners = listenersPy.map { pyObj ->
-            val listenerMap = pyObj.asMap()
-            Listener(
-                id = listenerMap[PyObject.fromJava("id")]?.toInt() ?: -1,
-                uri = listenerMap[PyObject.fromJava("uri")].toString()
-            )
+            json.decodeFromString<Listener>(pyObj.toString())
         }
         emit(listeners)
     }.flowOn(Dispatchers.IO)
@@ -40,21 +36,15 @@ class PwncatRepository {
         emit(Unit)
     }.flowOn(Dispatchers.IO)
 
-
     fun deleteListener(listenerId: Int): Flow<Unit> = flow {
         sessionManager.callAttr("remove_listener", listenerId)
         emit(Unit)
     }.flowOn(Dispatchers.IO)
 
-
     fun getSessions(): Flow<List<Session>> = flow {
         val sessionsPy = sessionManager.callAttr("get_sessions").asList()
         val sessions = sessionsPy.map { pyObj ->
-            val sessionMap = pyObj.asMap()
-            Session(
-                id = sessionMap[PyObject.fromJava("id")]!!.toInt(),
-                platform = sessionMap[PyObject.fromJava("platform")].toString()
-            )
+            json.decodeFromString<Session>(pyObj.toString())
         }
         emit(sessions)
     }.flowOn(Dispatchers.IO)
@@ -122,7 +112,15 @@ class PwncatRepository {
         emit(lootItems)
     }.flowOn(Dispatchers.IO)
 
-    // --- Chorus (Automation) Functions ---
+    fun generatePhishingSite(targetUrl: String, payload: String): Flow<String> = flow {
+        val result = sessionManager.callAttr("generate_phishing_site", targetUrl, payload).asMap()
+        val error = result[PyObject.fromJava("error")]
+        if (error != null) {
+            throw Exception(error.toString())
+        } else {
+            emit(result[PyObject.fromJava("path")].toString())
+        }
+    }.flowOn(Dispatchers.IO)
 
     fun getScripts(): Flow<List<Script>> = flow {
         val scriptsPy = sessionManager.callAttr("get_scripts").asList()
@@ -154,15 +152,5 @@ class PwncatRepository {
     fun runScript(sessionId: Int, name: String): Flow<Unit> = flow {
         sessionManager.callAttr("run_script", sessionId, name)
         emit(Unit)
-    }.flowOn(Dispatchers.IO)
-
-    fun generatePhishingSite(targetUrl: String, payload: String): Flow<String> = flow {
-        val result = sessionManager.callAttr("generate_phishing_site", targetUrl, payload).asMap()
-        val error = result[PyObject.fromJava("error")]
-        if (error != null) {
-            throw Exception(error.toString())
-        } else {
-            emit(result[PyObject.fromJava("path")].toString())
-        }
     }.flowOn(Dispatchers.IO)
 }
