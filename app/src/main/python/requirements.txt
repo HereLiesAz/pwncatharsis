@@ -1,1 +1,2 @@
-# All dependencies are now provided as source files.
+requests
+beautifulsoup4

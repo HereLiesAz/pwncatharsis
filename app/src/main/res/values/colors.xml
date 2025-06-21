@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="charcoal">#FF1A1A1D</color>
-    <color name="dark_gray">#FF28282B</color>
-    <color name="cyber_green">#FF39FF14</color>
-    <color name="cyber_purple">#FFC700FF</color>
-    <color name="light_gray">#FFD3D3D3</color>
+    <color name="charcoal">#FF1A1A1A</color>
+    <color name="ash">#FF333333</color>
+    <color name="bone">#FFCCCCCC</color>
+    <color name="blood">#FF8B0000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
