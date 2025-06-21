@@ -31,8 +31,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled =
-                false
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -61,11 +60,12 @@ android {
     ndkVersion = "27.0.12077973"
 }
 
+// This is the correct location and structure for the Chaquopy configuration.
 chaquopy {
     defaultConfig {
         pip {
-            // Chaquopy will automatically install from requirements.txt
-            // No explicit install needed here anymore.
+            // The path must be relative to the module root.
+            install("-r", "src/main/python/requirements.txt")
         }
     }
 }
