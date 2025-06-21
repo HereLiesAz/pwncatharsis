@@ -46,8 +46,10 @@ This application is a self-contained native Android app that bundles the Python 
 ## **Credits**
 
 * This project is built upon the original `pwncat` script by **cytopia**. Many thanks for their
-  foundational work.
+  foundational work. You can find the original project at https://github.com/cytopia/pwncat.
 * The reverse shell generator is inspired by the work
   of [0dayCTF/reverse-shell-generator](https://github.com/0dayCTF/reverse-shell-generator).
 * Phishing page generation will be based on the work
   of [andpalmier/makephish](https://github.com/andpalmier/makephish).
+
+<!-- end list -->

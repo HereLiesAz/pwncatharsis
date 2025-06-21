@@ -41,6 +41,7 @@ import com.hereliesaz.pwncatharsis.ui.screens.SessionScreen
 import com.hereliesaz.pwncatharsis.ui.screens.SettingsScreen
 import com.hereliesaz.pwncatharsis.ui.theme.PwncatharsisTheme
 import com.hereliesaz.pwncatharsis.viewmodel.MainViewModel
+import com.hereliesaz.pwncatharsis.viewmodel.NetworkViewModel
 import com.hereliesaz.pwncatharsis.viewmodel.ReverseShellViewModel
 import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModel
 import com.hereliesaz.pwncatharsis.viewmodel.ViewModelFactory
@@ -64,7 +65,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    // Removed "Network" from the main navigation list
     val screens = listOf(
         BottomNavItem.Dashboard,
         BottomNavItem.Recon,
@@ -73,6 +73,7 @@ fun AppNavigation() {
         BottomNavItem.Chorus
     )
     val mainViewModel: MainViewModel = viewModel()
+    val networkViewModel: NetworkViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -111,7 +112,12 @@ fun AppNavigation() {
             startDestination = BottomNavItem.Dashboard.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Dashboard.route) { DashboardScreen(viewModel = mainViewModel) }
+            composable(BottomNavItem.Dashboard.route) {
+                DashboardScreen(
+                    mainViewModel = mainViewModel,
+                    networkViewModel = networkViewModel
+                )
+            }
             composable(BottomNavItem.Recon.route) { ReconScreen(viewModel = mainViewModel) }
             composable(BottomNavItem.Exploit.route) {
                 ExploitScreen(
