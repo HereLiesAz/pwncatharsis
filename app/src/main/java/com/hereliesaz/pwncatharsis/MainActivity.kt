@@ -5,11 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,16 +26,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import com.hereliesaz.pwncatharsis.ui.screens.DashboardScreen
-import com.hereliesaz.pwncatharsis.ui.screens.ExploitScreen
-import com.hereliesaz.pwncatharsis.ui.screens.PillageScreen
-import com.hereliesaz.pwncatharsis.ui.screens.ReconScreen
-import com.hereliesaz.pwncatharsis.ui.screens.SessionScreen
-import com.hereliesaz.pwncatharsis.ui.screens.SettingsScreen
+import com.hereliesaz.pwncatharsis.ui.screens.*
 import com.hereliesaz.pwncatharsis.ui.theme.PwncatharsisTheme
 import com.hereliesaz.pwncatharsis.viewmodel.MainViewModel
 import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModel
-import com.hereliesaz.pwncatharsis.viewmodel.SessionViewModelFactory
+import com.hereliesaz.pwncatharsis.viewmodel.ViewModelFactory // <-- Using the generic factory
 
 class MainActivity : ComponentActivity() {
 
@@ -67,7 +58,8 @@ fun AppNavigation() {
         BottomNavItem.Dashboard,
         BottomNavItem.Recon,
         BottomNavItem.Exploit,
-        BottomNavItem.Pillage
+        BottomNavItem.Pillage,
+        BottomNavItem.Chorus
     )
     val mainViewModel: MainViewModel = viewModel()
 
@@ -111,7 +103,7 @@ fun AppNavigation() {
             startDestination = BottomNavItem.Dashboard.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Dashboard.route) { DashboardScreen() }
+            composable(BottomNavItem.Dashboard.route) { DashboardScreen(viewModel = mainViewModel) } // Pass ViewModel
             composable(BottomNavItem.Recon.route) { ReconScreen(viewModel = mainViewModel) }
             composable(BottomNavItem.Exploit.route) {
                 ExploitScreen(
@@ -121,13 +113,15 @@ fun AppNavigation() {
                     }
                 )
             }
-            composable(BottomNavItem.Pillage.route) { PillageScreen() }
+            composable(BottomNavItem.Pillage.route) { PillageScreen(viewModel = mainViewModel) } // Pass ViewModel
+            composable(BottomNavItem.Chorus.route) { ChorusScreen() }
             composable("settings") { SettingsScreen(onBack = { navController.popBackStack() }) }
             composable("session/{sessionId}") { backStackEntry ->
                 val sessionId = backStackEntry.arguments?.getString("sessionId")?.toIntOrNull()
                 if (sessionId != null) {
+                    // Use the generic ViewModelFactory to create the SessionViewModel
                     val sessionViewModel: SessionViewModel = viewModel(
-                        factory = SessionViewModelFactory(sessionId)
+                        factory = ViewModelFactory { SessionViewModel(sessionId) }
                     )
                     SessionScreen(
                         viewModel = sessionViewModel,
@@ -149,4 +143,5 @@ sealed class BottomNavItem(
     object Recon : BottomNavItem("Recon", Icons.Default.Search, "recon")
     object Exploit : BottomNavItem("Exploit", Icons.Default.FlashOn, "exploit")
     object Pillage : BottomNavItem("Pillage", Icons.Default.Archive, "pillage")
+    object Chorus : BottomNavItem("Chorus", Icons.Default.PlayArrow, "chorus")
 }

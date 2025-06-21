@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hereliesaz.pwncatharsis.data.PwncatRepository
 import com.hereliesaz.pwncatharsis.models.Listener
+import com.hereliesaz.pwncatharsis.models.LootItem
 import com.hereliesaz.pwncatharsis.models.Session
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,15 +23,18 @@ class MainViewModel : ViewModel() {
     private val _sessions = MutableStateFlow<List<Session>>(emptyList())
     val sessions: StateFlow<List<Session>> = _sessions.asStateFlow()
 
+    private val _allLoot = MutableStateFlow<List<LootItem>>(emptyList())
+    val allLoot: StateFlow<List<LootItem>> = _allLoot.asStateFlow()
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
-        // Start polling for listeners and sessions
         viewModelScope.launch {
             while (true) {
                 fetchListeners()
                 fetchSessions()
+                fetchAllLoot()
                 if (_isLoading.value) _isLoading.value = false
                 delay(2000) // Poll every 2 seconds
             }
@@ -40,30 +44,30 @@ class MainViewModel : ViewModel() {
     private fun fetchListeners() {
         viewModelScope.launch {
             repository.getListeners()
-                .catch { e ->
-                    // Handle error, e.g., log it or show a message
-                }
-                .collect { listenerList ->
-                    _listeners.value = listenerList
-                }
+                .catch { e -> /* Handle error */ }
+                .collect { listenerList -> _listeners.value = listenerList }
         }
     }
 
     private fun fetchSessions() {
         viewModelScope.launch {
             repository.getSessions()
-                .catch { e ->
-                    // Handle error
-                }
-                .collect { sessionList ->
-                    _sessions.value = sessionList
-                }
+                .catch { e -> /* Handle error */ }
+                .collect { sessionList -> _sessions.value = sessionList }
+        }
+    }
+
+    private fun fetchAllLoot() {
+        viewModelScope.launch {
+            repository.getAllLoot()
+                .catch { e -> /* Handle error */ }
+                .collect { lootList -> _allLoot.value = lootList }
         }
     }
 
     fun createListener(uri: String) {
         viewModelScope.launch {
-            repository.createListener(uri).collect {} // Refresh list after creation
+            repository.createListener(uri).collect {}
         }
     }
 
