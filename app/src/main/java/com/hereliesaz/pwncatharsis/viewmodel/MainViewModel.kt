@@ -63,13 +63,13 @@ class MainViewModel : ViewModel() {
 
     fun createListener(uri: String) {
         viewModelScope.launch {
-            repository.createListener(uri).collect() // Refresh list after creation
+            repository.createListener(uri).collect {} // Refresh list after creation
         }
     }
 
     fun deleteListener(listenerId: Int) {
         viewModelScope.launch {
-            repository.deleteListener(listenerId).collect()
+            repository.deleteListener(listenerId).collect {}
         }
     }
 }

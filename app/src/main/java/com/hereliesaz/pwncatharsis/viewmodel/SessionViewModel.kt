@@ -45,9 +45,9 @@ class SessionViewModel(private val sessionId: Int) : ViewModel() {
             override fun onNewLoot(lootData: PyObject) {
                 val lootMap = lootData.asMap()
                 val newItem = LootItem(
-                    type = lootMap[PyObject.fromString("type")].toString(),
-                    source = lootMap[PyObject.fromString("source")].toString(),
-                    content = lootMap[PyObject.fromString("content")].toString()
+                    type = lootMap[PyObject.fromJava("type")].toString(),
+                    source = lootMap[PyObject.fromJava("source")].toString(),
+                    content = lootMap[PyObject.fromJava("content")].toString()
                 )
                 _loot.value = _loot.value + newItem
             }
@@ -55,9 +55,9 @@ class SessionViewModel(private val sessionId: Int) : ViewModel() {
             override fun onNewPrivescFinding(findingData: PyObject) {
                 val findingMap = findingData.asMap()
                 val newItem = PrivescFinding(
-                    name = findingMap[PyObject.fromString("name")].toString(),
-                    description = findingMap[PyObject.fromString("description")].toString(),
-                    exploitId = findingMap[PyObject.fromString("exploit_id")].toString()
+                    name = findingMap[PyObject.fromJava("name")].toString(),
+                    description = findingMap[PyObject.fromJava("description")].toString(),
+                    exploitId = findingMap[PyObject.fromJava("exploit_id")].toString()
                 )
                 _privescFindings.value = _privescFindings.value + newItem
             }
