@@ -62,9 +62,12 @@ android {
 
 chaquopy {
     defaultConfig {
-        buildPython("C:/Users/azrie/python-3.13.5-embed-amd64/python.exe", "-3.13")
+        buildPython("C:/Users/azrie/python-3.13.5-embed-amd64/python.exe")
         // All python dependencies are provided as local source files.
-        // No pip configuration is needed.
+        pip {
+            install("requests")
+            install("beautifulsoup4")
+        }
         version = "3.13"
     }
 }
