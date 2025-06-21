@@ -239,3 +239,15 @@ STATUS: ACTIVE
     - `cytopia/pwncat`
     - `0dayCTF/reverse-shell-generator`
     - `andpalmier/makephish`
+
+We need to make it so that the app gets a static ip address for the user, then saves it for
+selection and reuse later.
+Also, the app should scan for wifi signals, allowing the user to save the ssid and ip address, also
+for use later.
+And then, the app should do a network scan, discovering operating systems and device types, and
+those should be savable too.
+Lastly, the app should perform and save a port scan to make that process completely point and click,
+if so desired. The user should be able to add a custom name to any shell.
+We may want to pull as much info as we can from every ip address using Shodan or something similar.
+And of course, any reverse shell generated should be saved as well.
+And I hope it goes without saying, ALL reverse shells must be persistent.
