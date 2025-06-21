@@ -17,6 +17,7 @@ android {
         versionName = "0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -29,7 +30,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled =
+                false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -85,8 +87,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.material3)
     implementation("androidx.compose.material3:material3-window-size-class:1.3.2")
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha16")    // ViewModel for Compose
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha16")
+    // ViewModel for Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Add these dependencies
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
 
     // Networking (Retrofit for REST, OkHttp for WebSockets)
 

@@ -1,4 +1,4 @@
 <resources>
 
-    <style name="Theme.Pwncatharsis" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Pwncatharsis" parent="android:Theme.DeviceDefault.Light.NoActionBar" />
 </resources>
