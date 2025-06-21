@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)chrome-extension://cknbjddgncdahggojmpllojloapoedao/popup.html -->
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>JourneyDraw</title>
+    <meta content="免费AI创作/绘图 - JourneyDraw Midjourney By ChatGPT" name="description">
+    <link as="style"
+          href="chrome-extension://cknbjddgncdahggojmpllojloapoedao/css/chunk-vendors.06c3b195.css"
+          rel="preload">
+    <link as="style"
+          href="chrome-extension://cknbjddgncdahggojmpllojloapoedao/css/popup.ef874138.css"
+          rel="preload">
+    <link as="script"
+          href="chrome-extension://cknbjddgncdahggojmpllojloapoedao/js/chunk-vendors.8c0980db.js"
+          rel="preload">
+    <link as="script"
+          href="chrome-extension://cknbjddgncdahggojmpllojloapoedao/js/popup.f37c5c1e.js"
+          rel="preload">
+    <link href="chrome-extension://cknbjddgncdahggojmpllojloapoedao/css/chunk-vendors.06c3b195.css"
+          rel="stylesheet">
+    <link href="chrome-extension://cknbjddgncdahggojmpllojloapoedao/css/popup.ef874138.css"
+          rel="stylesheet">
+</head>
+<body>
+<div class="prompt-content" style="padding-bottom: 10px;">
+    <div style="padding-bottom: 5px; border-bottom: 1px solid rgb(219, 222, 225);"><img
+            src="chrome-extension://cknbjddgncdahggojmpllojloapoedao/img/logo.png"
+            style="width: 24px; vertical-align: middle; margin-right: 10px;"><span>Midjourney Prompt Helper</span>
+    </div>
+    <div>
+        <div><span class="input-span"> Prompt </span><a
+                class="study" href="https://docs.midjourney.com/docs/prompts"
+                target="_blank">Help</a><span class="surper"> Surprise me </span></div>
+        <div class="el-textarea"><textarea autocomplete="off" class="el-textarea__inner"
+                                           placeholder="Typing your idea here"
+                                           rows="2"
+                                           style="min-height: 2px;"></textarea><!----></div>
+    </div>
+    <div>
+        <div><span class="input-span"> Negative Prompt </span></div>
+        <div class="el-textarea"><textarea autocomplete="off" class="el-textarea__inner"
+                                           placeholder="Typing the terms you want to avoid "
+                                           rows="1"
+                                           style="min-height: 2px;"></textarea><!----></div>
+    </div>
+    <div class="select-div">
+        <div>
+            <div class="select-span"><span>Depth of field </span></div>
+            <div>
+                <div class="el-select"><!---->
+                    <div class="el-input el-input--suffix"><!----><input autocomplete="off"
+                                                                         class="el-input__inner"
+                                                                         placeholder="请选择"
+                                                                         readonly="readonly"
+                                                                         type="text">
+                        <!----><span class="el-input__suffix"><span
+                                class="el-input__suffix-inner"><i
+                                class="el-select__caret el-input__icon el-icon-arrow-up"></i><!---->
+                            <!----><!----><!----><!----></span><!----></span><!----><!----></div>
+                    <div class="el-select-dropdown el-popper" style="display: none;">
+                        <div class="el-scrollbar" style="">
+                            <div class="el-select-dropdown__wrap el-scrollbar__wrap el-scrollbar__wrap--hidden-default">
+                                <ul class="el-scrollbar__view el-select-dropdown__list"><!---->
+                                    <li class="el-select-dropdown__item selected"><span>No Preference</span>
+                                    </li>
+                                    <li class="el-select-dropdown__item">
+                                        <span>Deep (Full Focus)</span></li>
+                                    <li class="el-select-dropdown__item">
+                                        <span>Shallow (Focal Blur)</span></li>
+                                </ul>
+                            </div>
+                            <div class="el-scrollbar__bar is-horizontal">
+                                <div class="el-scrollbar__thumb"
+                                     style="transform: translateX(0%);"></div>
+                            </div>
+                            <div class="el-scrollbar__bar is-vertical">
+                                <div class="el-scrollbar__thumb"
+                                     style="transform: translateY(0%);"></div>
+                            </div>
+                        </div><!----></div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="select-span"><span>Ratio </span></div>
+            <div>
+                <div class="el-select"><!---->
+                    <div class="el-input el-input--suffix"><!----><input autocomplete="off"
+                                                                         class="el-input__inner"
+                                                                         placeholder="请选择"
+                                                                         readonly="readonly"
+                                                                         type="text">
+                        <!----><span class="el-input__suffix"><span
+                                class="el-input__suffix-inner"><i
+                                class="el-select__caret el-input__icon el-icon-arrow-up"></i><!---->
+                            <!----><!----><!----><!----></span><!----></span><!----><!----></div>
+                    <div class="el-select-dropdown el-popper" style="display: none;">
+                        <div class="el-scrollbar" style="">
+                            <div class="el-select-dropdown__wrap el-scrollbar__wrap el-scrollbar__wrap--hidden-default">
+                                <ul class="el-scrollbar__view el-select-dropdown__list"><!---->
+                                    <li class="el-select-dropdown__item selected">
+                                        <span>Square (1:1)</span></li>
+                                    <li class="el-select-dropdown__item">
+                                        <span>Widescreen (16:9)</span></li>
+                                    <li class="el-select-dropdown__item"><span>Mobile (9:16)</span>
+                                    </li>
+                                    <li class="el-select-dropdown__item">
+                                        <span>Landscape (3:2)</span></li>
+                                    <li class="el-select-dropdown__item"><span>Portrait (4:5)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="el-scrollbar__bar is-horizontal">
+                                <div class="el-scrollbar__thumb"
+                                     style="transform: translateX(0%);"></div>
+                            </div>
+                            <div class="el-scrollbar__bar is-vertical">
+                                <div class="el-scrollbar__thumb"
+                                     style="transform: translateY(0%);"></div>
+                            </div>
+                        </div><!----></div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="select-span"><span>Quality </span></div>
+            <div>
+                <div class="el-select"><!---->
+                    <div class="el-input el-input--suffix"><!----><input autocomplete="off"
+                                                                         class="el-input__inner"
+                                                                         placeholder="请选择"
+                                                                         readonly="readonly"
+                                                                         type="text">
+                        <!----><span class="el-input__suffix"><span
+                                class="el-input__suffix-inner"><i
+                                class="el-select__caret el-input__icon el-icon-arrow-up"></i><!---->
+                            <!----><!----><!----><!----></span><!----></span><!----><!----></div>
+                    <div class="el-select-dropdown el-popper" style="display: none;">
+                        <div class="el-scrollbar" style="">
+                            <div class="el-select-dropdown__wrap el-scrollbar__wrap el-scrollbar__wrap--hidden-default">
+                                <ul class="el-scrollbar__view el-select-dropdown__list"><!---->
+                                    <li class="el-select-dropdown__item selected"><span>1x</span>
+                                    </li>
+                                    <li class="el-select-dropdown__item"><span>0.25x</span></li>
+                                    <li class="el-select-dropdown__item"><span>0.5x</span></li>
+                                    <li class="el-select-dropdown__item"><span>2x</span></li>
+                                </ul>
+                            </div>
+                            <div class="el-scrollbar__bar is-horizontal">
+                                <div class="el-scrollbar__thumb"
+                                     style="transform: translateX(0%);"></div>
+                            </div>
+                            <div class="el-scrollbar__bar is-vertical">
+                                <div class="el-scrollbar__thumb"
+                                     style="transform: translateY(0%);"></div>
+                            </div>
+                        </div><!----></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slider-div">
+        <div>
+            <div class="slider-span"><span>Chaos</span></div>
+            <div style="padding-left: 10px;">
+                <div aria-label="slider between 0 and 100" aria-orientation="horizontal"
+                     aria-valuemax="100"
+                     aria-valuemin="0" aria-valuetext="0" class="el-slider"
+                     role="slider"><!---->
+                    <div class="el-slider__runway">
+                        <div class="el-slider__bar" style="width: 0%; left: 0%;"></div>
+                        <div class="el-slider__button-wrapper" style="left: 0%;" tabindex="0">
+                            <div aria-describedby="el-tooltip-554"
+                                 class="el-tooltip el-slider__button" tabindex="0"></div>
+                        </div><!----><!----></div>
+                </div>
+                <div class="slider-num"> 0</div>
+            </div>
+        </div>
+        <div>
+            <div class="slider-span"><span>Stylize</span></div>
+            <div style="padding-left: 10px;">
+                <div aria-label="slider between 0 and 1000" aria-orientation="horizontal"
+                     aria-valuemax="1000"
+                     aria-valuemin="0" aria-valuetext="0" class="el-slider"
+                     role="slider"><!---->
+                    <div class="el-slider__runway">
+                        <div class="el-slider__bar" style="width: 10%; left: 0%;"></div>
+                        <div class="el-slider__button-wrapper" style="left: 10%;" tabindex="0">
+                            <div aria-describedby="el-tooltip-7834"
+                                 class="el-tooltip el-slider__button" tabindex="0"></div>
+                        </div><!----><!----></div>
+                </div>
+                <div class="slider-num"> 100</div>
+            </div>
+        </div>
+        <div>
+            <div class="slider-span"><span>Stop</span></div>
+            <div style="padding-left: 10px;">
+                <div aria-label="slider between 10 and 100" aria-orientation="horizontal"
+                     aria-valuemax="100"
+                     aria-valuemin="10" aria-valuetext="10" class="el-slider"
+                     role="slider"><!---->
+                    <div class="el-slider__runway">
+                        <div class="el-slider__bar" style="left: 0%; width: 100%;"></div>
+                        <div class="el-slider__button-wrapper" style="left: 100%;" tabindex="0">
+                            <div aria-describedby="el-tooltip-3158"
+                                 class="el-tooltip el-slider__button" tabindex="0"></div>
+                        </div><!----><!----></div>
+                </div>
+                <div class="slider-num"> 100</div>
+            </div>
+        </div>
+    </div>
+    <div class="radio-div">
+        <div>
+            <div class="radio-span"><span>Seed</span></div>
+            <div>
+                <div class="el-radio-group" role="radiogroup"><label aria-checked="true"
+                                                                     class="el-radio is-checked"
+                                                                     role="radio"
+                                                                     tabindex="0"><span
+                        class="el-radio__input is-checked"><span
+                        class="el-radio__inner"></span><input aria-hidden="true" autocomplete="off"
+                                                              class="el-radio__original"
+                                                              tabindex="-1"
+                                                              type="radio" value="0"></span><span
+                        class="el-radio__label">Random Seed<!----></span></label><label
+                        class="el-radio"
+                        role="radio"
+                        tabindex="-1"><span
+                        class="el-radio__input"><span class="el-radio__inner"></span><input
+                        aria-hidden="true" autocomplete="off" class="el-radio__original"
+                        tabindex="-1"
+                        type="radio" value="1"></span><span class="el-radio__label">Custom
+                    <!----></span></label></div><!----></div>
+        </div>
+    </div>
+    <div class="checkbox-div">
+        <div>
+            <div class="">
+                <div> Styles</div>
+                <div class="el-dialog__wrapper checkbox-dialog" style="display: none;">
+                    <div aria-label="Styles" aria-modal="true" class="el-dialog" role="dialog"
+                         style="margin-top: 15vh; width: 92%;">
+                        <div class="el-dialog__header"><span class="el-dialog__title">Styles</span>
+                            <button aria-label="Close" class="el-dialog__headerbtn" type="button"><i
+                                    class="el-dialog__close el-icon el-icon-close"></i></button>
+                        </div><!---->
+                        <div class="el-dialog__footer"><span class="dialog-footer"><button
+                                class="el-button el-button--default" type="button"><!---->
+                            <!----><span>Close</span></button><button
+                                class="el-button el-button--primary"
+                                type="button"><!---->
+                            <!----><span>Sure</span></button></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="">
+                <div> Colors</div>
+                <div class="el-dialog__wrapper checkbox-dialog" style="display: none;">
+                    <div aria-label="Colors" aria-modal="true" class="el-dialog" role="dialog"
+                         style="margin-top: 15vh; width: 92%;">
+                        <div class="el-dialog__header"><span class="el-dialog__title">Colors</span>
+                            <button aria-label="Close" class="el-dialog__headerbtn" type="button"><i
+                                    class="el-dialog__close el-icon el-icon-close"></i></button>
+                        </div><!---->
+                        <div class="el-dialog__footer"><span class="dialog-footer"><button
+                                class="el-button el-button--default" type="button"><!---->
+                            <!----><span>Close</span></button><button
+                                class="el-button el-button--primary"
+                                type="button"><!---->
+                            <!----><span>Sure</span></button></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="">
+                <div> Artists</div>
+                <div class="el-dialog__wrapper checkbox-dialog" style="display: none;">
+                    <div aria-label="Artists" aria-modal="true" class="el-dialog" role="dialog"
+                         style="margin-top: 15vh; width: 92%;">
+                        <div class="el-dialog__header"><span class="el-dialog__title">Artists</span>
+                            <button aria-label="Close" class="el-dialog__headerbtn" type="button"><i
+                                    class="el-dialog__close el-icon el-icon-close"></i></button>
+                        </div><!---->
+                        <div class="el-dialog__footer"><span class="dialog-footer"><button
+                                class="el-button el-button--default" type="button"><!---->
+                            <!----><span>Close</span></button><button
+                                class="el-button el-button--primary"
+                                type="button"><!---->
+                            <!----><span>Sure</span></button></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="">
+                <div> Materials</div>
+                <div class="el-dialog__wrapper checkbox-dialog" style="display: none;">
+                    <div aria-label="Materials" aria-modal="true" class="el-dialog" role="dialog"
+                         style="margin-top: 15vh; width: 92%;">
+                        <div class="el-dialog__header"><span
+                                class="el-dialog__title">Materials</span>
+                            <button aria-label="Close" class="el-dialog__headerbtn" type="button"><i
+                                    class="el-dialog__close el-icon el-icon-close"></i></button>
+                        </div><!---->
+                        <div class="el-dialog__footer"><span class="dialog-footer"><button
+                                class="el-button el-button--default" type="button"><!---->
+                            <!----><span>Close</span></button><button
+                                class="el-button el-button--primary"
+                                type="button"><!---->
+                            <!----><span>Sure</span></button></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="">
+                <div> Lighting</div>
+                <div class="el-dialog__wrapper checkbox-dialog" style="display: none;">
+                    <div aria-label="Lighting" aria-modal="true" class="el-dialog" role="dialog"
+                         style="margin-top: 15vh; width: 92%;">
+                        <div class="el-dialog__header"><span
+                                class="el-dialog__title">Lighting</span>
+                            <button aria-label="Close" class="el-dialog__headerbtn" type="button"><i
+                                    class="el-dialog__close el-icon el-icon-close"></i></button>
+                        </div><!---->
+                        <div class="el-dialog__footer"><span class="dialog-footer"><button
+                                class="el-button el-button--default" type="button"><!---->
+                            <!----><span>Close</span></button><button
+                                class="el-button el-button--primary"
+                                type="button"><!---->
+                            <!----><span>Sure</span></button></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="">
+                <div> Camera</div>
+                <div class="el-dialog__wrapper checkbox-dialog" style="display: none;">
+                    <div aria-label="Camera" aria-modal="true" class="el-dialog" role="dialog"
+                         style="margin-top: 15vh; width: 92%;">
+                        <div class="el-dialog__header"><span class="el-dialog__title">Camera</span>
+                            <button aria-label="Close" class="el-dialog__headerbtn" type="button"><i
+                                    class="el-dialog__close el-icon el-icon-close"></i></button>
+                        </div><!---->
+                        <div class="el-dialog__footer"><span class="dialog-footer"><button
+                                class="el-button el-button--default" type="button"><!---->
+                            <!----><span>Close</span></button><button
+                                class="el-button el-button--primary"
+                                type="button"><!---->
+                            <!----><span>Sure</span></button></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="promptEnd"><span>/imagine prompt:  ::  </span></div>
+    <span class="clear">Clear All</span>
+    <div class="copy"> Copy</div>
+</div>
+<script src="chrome-extension://cknbjddgncdahggojmpllojloapoedao/js/chunk-vendors.8c0980db.js"></script>
+<script src="chrome-extension://cknbjddgncdahggojmpllojloapoedao/js/popup.f37c5c1e.js"></script>
+</body>
+</html>
